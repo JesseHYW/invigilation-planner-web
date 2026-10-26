@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#f7f9fc">
+    <meta name="description" content="学校教务监考工作量规划工具。实时计算人员分配，支持离线使用，刷新即重置。">
+    <meta name="color-scheme" content="light dark">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" type="image/png" href="./icons/icon-192.png">
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+    <link rel="stylesheet" href="./styles.css">
+    <title>监考规划 · 教务工作量助手</title>
+    <script type="module" src="./src/app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#planner-form">跳转到规划输入</a>
+    <header class="topbar">
+      <div class="brand"><img src="./icons/icon-192.png" width="44" height="44" alt=""><div><h1>监考规划</h1><p>教务工作量助手</p></div></div>
+      <div class="header-actions">
+        <div class="theme-switch" role="group" aria-label="界面外观">
+          <button id="theme-light" type="button" aria-pressed="true">浅色</button>
+          <button id="theme-dark" type="button" aria-pressed="false">深色</button>
+        </div>
+        <button class="button tonal" id="settings-open" type="button">设置</button>
+      </div>
+    </header>
+    <main class="page">
+      <div class="page-toolbar">
+        <div><span class="eyebrow">即时规划</span><p>输入即计算，刷新后重置。</p></div>
+        <div class="toolbar-actions"><button class="button text" id="example-button" type="button">填入示例</button><button class="button outlined" id="reset-button" type="button">重置</button></div>
+      </div>
+      <div class="planner-layout">
+        <form id="planner-form" class="input-column" autocomplete="off" novalidate>
+          <section class="card" aria-labelledby="exam-title">
+            <div class="section-heading"><span class="section-number" aria-hidden="true">01</span><div><h2 id="exam-title">考试规模</h2><p>确定本次考试需要多少监考人次</p></div></div>
+            <div class="field-grid">
+              <div class="field"><label for="rooms">考场数量</label><div class="input-shell"><input id="rooms" name="rooms" inputmode="numeric" type="text" maxlength="24" placeholder="如 18" aria-describedby="rooms-error"><span aria-hidden="true">个</span></div><p id="rooms-error" class="field-error" hidden></p></div>
+              <div class="field"><label for="sessions">考试场数</label><div class="input-shell"><input id="sessions" name="sessions" inputmode="numeric" type="text" maxlength="24" placeholder="如 3" aria-describedby="sessions-error"><span aria-hidden="true">场</span></div><p id="sessions-error" class="field-error" hidden></p></div>
+              <div class="field full"><label for="invigilators">每场每考场监考人数</label><div class="input-shell"><input id="invigilators" name="invigilators" inputmode="numeric" type="text" maxlength="24" value="2" aria-describedby="invigilators-error"><span aria-hidden="true">人</span></div><p id="invigilators-error" class="field-error" hidden></p></div>
+            </div>
+          </section>
+          <section class="card" aria-labelledby="staff-title">
+            <div class="section-heading"><span class="section-number" aria-hidden="true">02</span><div><h2 id="staff-title">人员安排</h2><p>每位教师只计入一个类别</p></div></div>
+            <div class="field-grid">
+              <div class="field"><label for="staff">教职工总数</label><div class="input-shell"><input id="staff" name="staff" inputmode="numeric" type="text" maxlength="24" placeholder="如 69" aria-describedby="staff-error"><span aria-hidden="true">人</span></div><p id="staff-error" class="field-error" hidden></p></div>
+              <div class="field"><label for="minimumSessions">普通教师最低场数</label><div class="input-shell"><input id="minimumSessions" name="minimumSessions" inputmode="numeric" type="text" maxlength="24" value="2" aria-describedby="minimumSessions-error minimum-hint"><span aria-hidden="true">场</span></div><p id="minimumSessions-error" class="field-error" hidden></p></div>
+            </div>
+            <p class="hint" id="minimum-hint">普通教师至少安排以上场数，需要时均摊增加。</p>
+            <div class="divider"></div>
+            <h3>特殊人员</h3>
+            <div class="field-grid">
+              <div class="field"><label for="homeroom">班主任人数</label><div class="input-shell"><input id="homeroom" name="homeroom" inputmode="numeric" type="text" maxlength="24" value="0" aria-describedby="homeroom-error"><span aria-hidden="true">人</span></div><p id="homeroom-error" class="field-error" hidden></p></div>
+              <div class="field"><label for="homeroomSessions">班主任每人场数</label><div class="input-shell"><input id="homeroomSessions" name="homeroomSessions" inputmode="numeric" type="text" maxlength="24" value="1" aria-describedby="homeroomSessions-error"><span aria-hidden="true">场</span></div><p id="homeroomSessions-error" class="field-error" hidden></p></div>
+              <div class="field full"><label for="excluded">不参与监考人数（不含班主任）</label><div class="input-shell"><input id="excluded" name="excluded" inputmode="numeric" type="text" maxlength="24" value="0" aria-describedby="excluded-error"><span aria-hidden="true">人</span></div><p id="excluded-error" class="field-error" hidden></p></div>
+              <div class="field full"><label for="oneSession">非班主任固定监考 1 场人数</label><div class="input-shell"><input id="oneSession" name="oneSession" inputmode="numeric" type="text" maxlength="24" value="0" aria-describedby="oneSession-error"><span aria-hidden="true">人</span></div><p id="oneSession-error" class="field-error" hidden></p></div>
+            </div>
+            <p class="info-note">三类特殊人员互不重复，其余人员自动作为普通教师。班主任设为 0 场时，请勿再计入“不参与监考”。</p>
+          </section>
+        </form>
+        <div class="result-column">
+          <section id="results" class="card result-card" aria-labelledby="result-title" tabindex="-1">
+            <div class="section-heading"><span class="section-number" aria-hidden="true">03</span><div><h2 id="result-title">规划结果</h2><p>随输入实时更新</p></div><span id="result-badge" class="badge">待填写</span></div>
+            <div id="result-content"><div class="empty-state"><span class="empty-number" aria-hidden="true">—</span><h3>从考试规模开始</h3><p>填写考场数量、考试场数和教职工总数，<br>即可查看监考工作量分配。</p></div></div>
+            <div id="calculation" class="calculation" hidden><h3>计算过程</h3><ol id="calculation-steps"></ol></div>
+            <div id="result-actions" class="result-actions" hidden><button class="button primary" id="copy-button" type="button">复制结果</button><button class="button outlined" id="share-button" type="button" hidden>分享结果</button></div>
+          </section>
+          <p class="scope-note">规划仅计算监考工作量；具体教师、考场和场次请另行编排。所有教师按可参加任意场次计算。</p>
+          <div id="update-banner" class="info-note update-banner" hidden><p>有新版本可用。更新后将重置当前输入。</p><button id="update-button" class="button tonal" type="button">更新并重置</button></div>
+        </div>
+      </div>
+      <footer class="footer"><span id="offline-status" role="status">正在准备离线使用…</span><button type="button" id="install-button" class="button text">安装到桌面</button></footer>
+    </main>
+    <a class="mobile-result-link" href="#results">查看规划结果 <span id="mobile-summary">待填写</span></a>
+    <dialog id="settings-dialog" aria-labelledby="settings-title">
+      <div class="dialog-heading"><h2 id="settings-title">设置</h2><button class="button text" id="settings-close" type="button">完成</button></div>
+      <label class="switch-row" for="show-calculation"><span><strong>显示计算过程</strong><small>在结果下方列出计算步骤和代入数值</small></span><input id="show-calculation" type="checkbox" role="switch"></label>
+      <div class="info-note"><strong>仅用于本次计算</strong><p>输入、外观选择和计算显示设置只在当前页面有效，刷新后重置。初始外观随系统显示为浅色或深色。</p><p>离线功能仅缓存应用资源，不保存规划数据。</p></div>
+    </dialog>
+    <dialog id="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-description"><h2 id="confirm-title">重置当前输入？</h2><p id="confirm-description">当前填写的内容将被清空。</p><div class="dialog-actions"><button class="button text" id="confirm-cancel" type="button" autofocus>取消</button><button class="button primary" id="confirm-accept" type="button">继续</button></div></dialog>
+    <dialog id="install-dialog" aria-labelledby="install-title"><div class="dialog-heading"><h2 id="install-title">安装到桌面</h2><button class="button text" id="install-close" type="button">关闭</button></div><p>Android：在浏览器菜单中选择“安装应用”或“添加到主屏幕”。</p><p>iPhone / iPad：在 Safari 的分享菜单中选择“添加到主屏幕”。</p><p>电脑：使用浏览器地址栏的安装按钮，或在菜单中选择安装此网站为应用。</p><p class="hint">安装入口因浏览器而异。待页面提示“离线已就绪”后，可断网使用；刷新仍会重置输入。</p></dialog>
+    <dialog id="copy-dialog" aria-labelledby="copy-title"><div class="dialog-heading"><h2 id="copy-title">复制规划结果</h2><button class="button text" id="copy-close" type="button">关闭</button></div><p>浏览器未允许自动复制，可选中下面的文字复制。</p><textarea id="copy-text" readonly aria-label="规划结果文本" rows="12"></textarea></dialog>
+    <p id="live-status" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></p>
+    <div id="toast" class="toast" role="status" hidden></div>
+    <noscript><div class="noscript">请启用 JavaScript 以使用实时监考计算。</div></noscript>
+  </body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "id": "./",
+  "name": "监考规划",
+  "short_name": "监考规划",
+  "description": "实时计算监考工作量与人员分配，刷新即重置。",
+  "lang": "zh-CN",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F7F9FC",
+  "theme_color": "#245B96",
+  "icons": [
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

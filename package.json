@@ -1,0 +1,13 @@
+{
+  "name": "invigilation-planner-web",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A dependency-free, ephemeral invigilation workload calculator and PWA.",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "build": "node scripts/build.mjs",
+    "test": "node --test tests/*.test.mjs"
+  }
+}
