@@ -1,4 +1,5 @@
 import { DEFAULT_INPUT, EXAMPLE_INPUT, calculate, formatPlan } from './calculator.js';
+import { createPlanImage, imageFilename } from './plan-image.js';
 
 const $ = (id) => document.getElementById(id);
 const fields = Object.keys(DEFAULT_INPUT);
@@ -16,6 +17,7 @@ let registration = null;
 let updateRequested = false;
 let toastTimer;
 let announcementTimer;
+let imageRequest = 0;
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -39,6 +41,10 @@ function applyInput(values) {
 
 function resetPage() {
   // Explicit writes defeat browser-restored form values, including BFCache restores.
+  imageRequest++;
+  $('share-button').disabled = false;
+  $('share-button').removeAttribute('aria-busy');
+  clearPlanImage();
   form.reset();
   themeOverridden = false;
   setTheme(systemDark.matches);
@@ -75,7 +81,10 @@ function render() {
     for (const row of result.rows) {
       const item = element('li', 'allocation-row');
       const description = element('div');
-      description.append(element('span', '', row.label), element('small', '', String(row.sessions) === '0' ? '不安排监考' : `每人监考 ${number(row.sessions)} 场`));
+      const workload = element('small');
+      if (String(row.sessions) === '0') workload.textContent = '不安排监考';
+      else workload.append('每人监考 ', element('strong', '', number(row.sessions)), ' 场');
+      description.append(element('span', '', row.label), workload);
       item.append(description, element('strong', '', `${number(row.people)} 人`));
       list.append(item);
     }
@@ -104,7 +113,6 @@ function render() {
     announcement = result.status === 'invalid' ? Object.values(result.errors).join('。') : incompleteMessage;
   }
   $('result-actions').hidden = result.status !== 'valid';
-  $('share-button').hidden = typeof navigator.share !== 'function';
   $('calculation').hidden = !(showCalculation && result.steps?.length);
   $('calculation-steps').replaceChildren(...(result.steps || []).map((step) => element('li', '', step)));
   clearTimeout(announcementTimer);
@@ -138,6 +146,12 @@ function showCopyFallback(text) {
   $('copy-text').select();
 }
 
+function clearPlanImage() {
+  $('plan-image').removeAttribute('src');
+  $('image-save').removeAttribute('href');
+  $('image-save').removeAttribute('download');
+}
+
 form.addEventListener('submit', (event) => event.preventDefault());
 form.addEventListener('input', (event) => {
   if (!fields.includes(event.target.name)) return;
@@ -151,7 +165,11 @@ $('theme-dark').addEventListener('click', () => { themeOverridden = true; setThe
 systemDark.addEventListener('change', () => { if (!themeOverridden) setTheme(systemDark.matches); });
 $('show-calculation').addEventListener('change', (event) => { showCalculation = event.target.checked; render(); });
 $('settings-open').addEventListener('click', () => $('settings-dialog').showModal());
-for (const dialog of ['settings', 'install', 'copy']) $(dialog + '-close').addEventListener('click', () => $(dialog + '-dialog').close());
+for (const dialog of ['settings', 'install', 'copy', 'image']) $(dialog + '-close').addEventListener('click', () => $(dialog + '-dialog').close());
+$('image-dialog').addEventListener('close', () => {
+  clearPlanImage();
+  if (!$('result-actions').hidden) $('share-button').focus();
+});
 $('confirm-cancel').addEventListener('click', () => { confirmAction = null; $('confirm-dialog').close(); });
 $('confirm-dialog').addEventListener('cancel', () => { confirmAction = null; });
 $('confirm-accept').addEventListener('click', () => { const action = confirmAction; confirmAction = null; $('confirm-dialog').close(); action?.(); });
@@ -162,9 +180,36 @@ $('copy-button').addEventListener('click', async () => {
   catch { showCopyFallback(text); }
 });
 $('share-button').addEventListener('click', async () => {
-  if (result.status !== 'valid' || !navigator.share) return;
-  try { await navigator.share({ title: '监考规划', text: formatPlan(result, input) }); }
-  catch (error) { if (error.name !== 'AbortError') notify('暂时无法分享，请使用“复制结果”'); }
+  const button = $('share-button');
+  if (result.status !== 'valid' || button.disabled) return;
+  const request = ++imageRequest;
+  const inputSnapshot = { ...input };
+  const resultSnapshot = { ...result, rows: result.rows.map((row) => ({ ...row })) };
+  const filename = imageFilename(new Date());
+  button.disabled = true;
+  button.setAttribute('aria-busy', 'true');
+  try {
+    const url = await createPlanImage(inputSnapshot, resultSnapshot);
+    if (request !== imageRequest) return;
+    $('plan-image').src = url;
+    $('image-save').href = url;
+    $('image-save').download = filename;
+    await $('plan-image').decode();
+    if (request !== imageRequest) return;
+    $('image-dialog').showModal();
+    $('image-dialog').scrollTop = 0;
+    document.querySelector('.image-preview').scrollTop = 0;
+  } catch {
+    if (request === imageRequest) {
+      clearPlanImage();
+      notify('图片生成失败，请重试');
+    }
+  } finally {
+    if (request === imageRequest) {
+      button.disabled = false;
+      button.removeAttribute('aria-busy');
+    }
+  }
 });
 window.addEventListener('beforeinstallprompt', (event) => { event.preventDefault(); installPrompt = event; });
 window.addEventListener('appinstalled', () => { installPrompt = null; $('install-button').hidden = true; notify('已安装到桌面'); });

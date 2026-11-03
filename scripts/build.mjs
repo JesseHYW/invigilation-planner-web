@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const webRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 export const releaseFiles = [
-  'index.html', 'styles.css', 'src/app.js', 'src/calculator.js',
+  'index.html', 'styles.css', 'src/app.js', 'src/calculator.js', 'src/plan-image.js',
   'sw.js', 'manifest.webmanifest', '_headers',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png',
 ];

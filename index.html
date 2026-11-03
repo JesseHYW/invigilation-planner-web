@@ -10,13 +10,13 @@
     <link rel="icon" type="image/png" href="./icons/icon-192.png">
     <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
     <link rel="stylesheet" href="./styles.css">
-    <title>监考规划 · 教务工作量助手</title>
+    <title>监考规划 · 教务小工具</title>
     <script type="module" src="./src/app.js"></script>
   </head>
   <body>
     <a class="skip-link" href="#planner-form">跳转到规划输入</a>
     <header class="topbar">
-      <div class="brand"><img src="./icons/icon-192.png" width="44" height="44" alt=""><div><h1>监考规划</h1><p>教务工作量助手</p></div></div>
+      <div class="brand"><img src="./icons/icon-192.png" width="44" height="44" alt=""><div><h1>监考规划</h1><p>教务小工具</p></div></div>
       <div class="header-actions">
         <div class="theme-switch" role="group" aria-label="界面外观">
           <button id="theme-light" type="button" aria-pressed="true">浅色</button>
@@ -63,23 +63,30 @@
             <div class="section-heading"><span class="section-number" aria-hidden="true">03</span><div><h2 id="result-title">规划结果</h2><p>随输入实时更新</p></div><span id="result-badge" class="badge">待填写</span></div>
             <div id="result-content"><div class="empty-state"><span class="empty-number" aria-hidden="true">—</span><h3>从考试规模开始</h3><p>填写考场数量、考试场数和教职工总数，<br>即可查看监考工作量分配。</p></div></div>
             <div id="calculation" class="calculation" hidden><h3>计算过程</h3><ol id="calculation-steps"></ol></div>
-            <div id="result-actions" class="result-actions" hidden><button class="button primary" id="copy-button" type="button">复制结果</button><button class="button outlined" id="share-button" type="button" hidden>分享结果</button></div>
+            <div id="result-actions" class="result-actions" hidden><button class="button primary" id="copy-button" type="button">复制结果</button><button class="button outlined" id="share-button" type="button" aria-haspopup="dialog">分享结果</button></div>
           </section>
           <p class="scope-note">规划仅计算监考工作量；具体教师、考场和场次请另行编排。所有教师按可参加任意场次计算。</p>
           <div id="update-banner" class="info-note update-banner" hidden><p>有新版本可用。更新后将重置当前输入。</p><button id="update-button" class="button tonal" type="button">更新并重置</button></div>
         </div>
       </div>
-      <footer class="footer"><span id="offline-status" role="status">正在准备离线使用…</span><button type="button" id="install-button" class="button text">安装到桌面</button></footer>
+      <footer class="footer"><span>© 2026 Jesse Huang</span><button type="button" id="install-button" class="button text">安装到桌面</button></footer>
     </main>
     <a class="mobile-result-link" href="#results">查看规划结果 <span id="mobile-summary">待填写</span></a>
     <dialog id="settings-dialog" aria-labelledby="settings-title">
       <div class="dialog-heading"><h2 id="settings-title">设置</h2><button class="button text" id="settings-close" type="button">完成</button></div>
       <label class="switch-row" for="show-calculation"><span><strong>显示计算过程</strong><small>在结果下方列出计算步骤和代入数值</small></span><input id="show-calculation" type="checkbox" role="switch"></label>
       <div class="info-note"><strong>仅用于本次计算</strong><p>输入、外观选择和计算显示设置只在当前页面有效，刷新后重置。初始外观随系统显示为浅色或深色。</p><p>离线功能仅缓存应用资源，不保存规划数据。</p></div>
+      <p id="offline-status" role="status">正在准备离线使用…</p>
     </dialog>
     <dialog id="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-description"><h2 id="confirm-title">重置当前输入？</h2><p id="confirm-description">当前填写的内容将被清空。</p><div class="dialog-actions"><button class="button text" id="confirm-cancel" type="button" autofocus>取消</button><button class="button primary" id="confirm-accept" type="button">继续</button></div></dialog>
-    <dialog id="install-dialog" aria-labelledby="install-title"><div class="dialog-heading"><h2 id="install-title">安装到桌面</h2><button class="button text" id="install-close" type="button">关闭</button></div><p>Android：在浏览器菜单中选择“安装应用”或“添加到主屏幕”。</p><p>iPhone / iPad：在 Safari 的分享菜单中选择“添加到主屏幕”。</p><p>电脑：使用浏览器地址栏的安装按钮，或在菜单中选择安装此网站为应用。</p><p class="hint">安装入口因浏览器而异。待页面提示“离线已就绪”后，可断网使用；刷新仍会重置输入。</p></dialog>
+    <dialog id="install-dialog" aria-labelledby="install-title"><div class="dialog-heading"><h2 id="install-title">安装到桌面</h2><button class="button text" id="install-close" type="button">关闭</button></div><p>Android：在浏览器菜单中选择“安装应用”或“添加到主屏幕”。</p><p>iPhone / iPad：在 Safari 的分享菜单中选择“添加到主屏幕”。</p><p>电脑：使用浏览器地址栏的安装按钮，或在菜单中选择安装此网站为应用。</p><p class="hint">安装入口因浏览器而异。在“设置”中确认“离线已就绪”后，可断网使用；刷新仍会重置输入。</p></dialog>
     <dialog id="copy-dialog" aria-labelledby="copy-title"><div class="dialog-heading"><h2 id="copy-title">复制规划结果</h2><button class="button text" id="copy-close" type="button">关闭</button></div><p>浏览器未允许自动复制，可选中下面的文字复制。</p><textarea id="copy-text" readonly aria-label="规划结果文本" rows="12"></textarea></dialog>
+    <dialog id="image-dialog" aria-labelledby="image-title" aria-describedby="image-hint">
+      <div class="dialog-heading"><h2 id="image-title">分享结果</h2><button class="button text" id="image-close" type="button" autofocus>关闭</button></div>
+      <div class="image-preview"><img id="plan-image" alt="监考规划图片，包含考试参数和人员分配结果"></div>
+      <p id="image-hint" class="hint">若浏览器未直接下载，可长按图片保存。</p>
+      <div class="dialog-actions"><a id="image-save" class="button primary" download>保存图片</a></div>
+    </dialog>
     <p id="live-status" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></p>
     <div id="toast" class="toast" role="status" hidden></div>
     <noscript><div class="noscript">请启用 JavaScript 以使用实时监考计算。</div></noscript>

@@ -92,11 +92,11 @@ test('install precaches a complete shell; navigation and modules work without ne
   assert.equal(harness.skipped, 0, 'install must not activate over an edited page');
   assert.equal(harness.claimed, 0);
   const entries = [...harness.storage.values()][0];
-  assert.equal(entries.size, 9);
+  assert.equal(entries.size, 10);
   assert.ok([...entries.keys()].every((url) => url.startsWith('https://school.example/planner/')));
   const networkBefore = harness.network.length;
   harness.setOnline(false);
-  for (const path of ['', 'index.html', 'src/app.js', 'src/calculator.js', 'styles.css']) {
+  for (const path of ['', 'index.html', 'src/app.js', 'src/calculator.js', 'src/plan-image.js', 'styles.css']) {
     const response = await harness.dispatch('fetch', { request: new Request(`https://school.example/planner/${path}`) });
     assert.equal(response.status, 200);
     assert.match(await response.text(), /^asset:/);
@@ -104,8 +104,8 @@ test('install precaches a complete shell; navigation and modules work without ne
   assert.equal(harness.network.length, networkBefore);
 });
 
-test('a missing shell resource rejects install instead of accepting a partial offline release', async () => {
-  const harness = workerHarness({ rejectPath: 'src/calculator.js' });
+test('a missing image module rejects install instead of accepting a partial offline release', async () => {
+  const harness = workerHarness({ rejectPath: 'src/plan-image.js' });
   await assert.rejects(harness.dispatch('install'), /Network unavailable/);
   assert.equal([...harness.storage.values()][0].size, 0);
   assert.equal(harness.skipped, 0);
@@ -143,7 +143,7 @@ test('worker ignores unrelated URLs and never caches requests or query strings a
   });
   assert.equal(response.status, 200);
   assert.deepEqual([...cacheBefore.keys()], keysBefore);
-  assert.equal(harness.network.length, 9);
+  assert.equal(harness.network.length, 10);
 });
 
 test('only an explicit update message activates a waiting worker', async () => {
@@ -167,9 +167,11 @@ test('local preview serves the actual shell with MIME types and excludes private
   const manifestResponse = await fetch(`${base}/planner/manifest.webmanifest`);
   assert.equal(manifestResponse.status, 200);
   assert.match(manifestResponse.headers.get('content-type'), /application\/manifest\+json/);
-  const module = await fetch(`${base}/planner/src/calculator.js`);
-  assert.equal(module.status, 200);
-  assert.match(module.headers.get('content-type'), /text\/javascript/);
+  for (const file of ['src/calculator.js', 'src/plan-image.js']) {
+    const module = await fetch(`${base}/planner/${file}`);
+    assert.equal(module.status, 200);
+    assert.match(module.headers.get('content-type'), /text\/javascript/);
+  }
   const head = await fetch(`${base}/planner/sw.js`, { method: 'HEAD' });
   assert.equal(head.status, 200);
   assert.equal(await head.text(), '');

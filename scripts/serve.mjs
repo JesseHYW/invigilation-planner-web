@@ -6,7 +6,7 @@ import { parseArgs } from 'node:util';
 
 const webRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const publicFiles = new Set([
-  'index.html', 'styles.css', 'src/app.js', 'src/calculator.js',
+  'index.html', 'styles.css', 'src/app.js', 'src/calculator.js', 'src/plan-image.js',
   'sw.js', 'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png',
 ]);

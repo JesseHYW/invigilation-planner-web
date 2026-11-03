@@ -1,5 +1,5 @@
 /* Only the application shell is cached. Form values never enter this worker. */
-const CACHE_VERSION = '2026-10-26-v1';
+const CACHE_VERSION = '2026-11-03-v1.1.0';
 const SCOPE = new URL(self.registration.scope);
 const CACHE_PREFIX = `invigilation-shell:${SCOPE.pathname}:`;
 const CACHE_NAME = `${CACHE_PREFIX}${CACHE_VERSION}`;
@@ -9,6 +9,7 @@ const SHELL_PATHS = [
   './styles.css',
   './src/app.js',
   './src/calculator.js',
+  './src/plan-image.js',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
